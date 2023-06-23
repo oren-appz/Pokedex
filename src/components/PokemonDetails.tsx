@@ -80,7 +80,7 @@ const PokemonDetails: React.FC = () => {
             <Stack direction="column" spacing={2}>
                 <Typography >{direction}{name}</Typography>
                 {id !== "" ?
-                    <img width="50" onClick={() => selectNewPokemon(name)}
+                    <img width="50" style={{ cursor: "pointer" }} onClick={() => selectNewPokemon(name)}
                         src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`}
                         alt={name} />
                     : ""

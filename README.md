@@ -7,9 +7,15 @@ Use the Pokemon API to make API requests for data https://pokeapi.co/docs/v2.
 - Able to search for any Pokemon.
 - Able to see a history of what has been searched and revisit at anytime. Technical Requirements
 
-## technical requirements
+## Technical requirements
 
-This project should be done with the latest React framework. This project should be done with the latest Redux framework. This project should be done using TypeScript. This project should be done using version control, preferably git. This project can be styled with SCSS/CSS or Styled Components if anything needs to be styled. This project should include a README that addresses anything you may not have completed. It should also address what additional changes you might need to make if the application were intended to run in a concurrent environment. Any other comments or thoughts about the project are also welcome.
+- This project should be done with the latest Redux framework.
+- This project should be done using TypeScript.
+- This project should be done using version control, preferably git.
+- This project can be styled with SCSS/CSS or Styled Components if anything needs to be styled.
+- This project should include a README that addresses anything you may not have completed.
+- It should also address what additional changes you might need to make if the application were intended to run in a concurrent environment.
+- Any other comments or thoughts about the project are also welcome.
 
 ## How to Run
 

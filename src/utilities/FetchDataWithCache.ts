@@ -1,12 +1,12 @@
 import memoize from 'memoizee';
 
 export type PokemonDetails = {
-    moves: unknown;
-    abilities: unknown;
+    moves: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    abilities: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     weight: string;
     height: string;
     name: string;
-    sprites: unknown;
+    sprites: any;// eslint-disable-line @typescript-eslint/no-explicit-any
     results: unknown;
 };
 
@@ -28,7 +28,6 @@ type CacheItem = {
     timestamp: number;
 };
 
-// Memoize the fetchData function
 const fetchDataMemoized = memoize(
     async (url) => {
         const response = await fetch(url);
@@ -60,12 +59,11 @@ const fetchData = async (url: string): Promise<PokemonList | PokemonDetails | nu
 
 
         try {
-            // Store data in localStorage with a timestamp
             localStorage.setItem(
                 url,
                 JSON.stringify({ data, timestamp: currentTime } as CacheItem)
             );
-        } catch (error) { // incase we storage quota exceeded. Will need to use memoization instead
+        } catch (error) { // in case we storage quota exceeded. Will need to use memoization instead
             console.warn("Storage error ", error)
             return data;
         }

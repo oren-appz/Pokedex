@@ -10,12 +10,8 @@ const darkTheme = createTheme({
     primary: {
       main: '#616161', // Custom grey color
     },
-    secondary: {
-      main: '#757575', // Custom grey color
-    },
     background: {
       default: '#424242', // Custom grey color
-      paper: '#616161', // Custom grey color
     },
   },
 });

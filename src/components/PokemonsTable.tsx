@@ -45,6 +45,14 @@ const PokemonsTable = () => {
     }
   };
 
+  useEffect(() => {
+    if (pokemons.length !== 0) {
+      setPokemonSelectionUrl(pokemons[0].url);
+    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    return () => { };
+  }, []);
+
   return (
     <div style={{ height: '80vh', "minWidth": '35%', margin: "0 5rem" }}>
       <Box sx={{ height: '90%', width: '100%' }}>

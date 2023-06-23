@@ -1,6 +1,7 @@
 import memoize from 'memoizee';
 
 export type PokemonDetails = {
+    species: any;// eslint-disable-line @typescript-eslint/no-explicit-any
     moves: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     abilities: any; // eslint-disable-line @typescript-eslint/no-explicit-any
     weight: string;
@@ -28,10 +29,11 @@ type CacheItem = {
     timestamp: number;
 };
 
+
+
 const fetchDataMemoized = memoize(
     async (url) => {
         const response = await fetch(url);
-        console.log(' the response', response)
         if (!response.ok) {
             throw new Error("Network response was not ok");
         }
@@ -54,16 +56,13 @@ const fetchData = async (url: string): Promise<PokemonList | PokemonDetails | nu
 
     try {
         const data = await fetchDataMemoized(url);
-        console.log("data", data)
-
-
 
         try {
             localStorage.setItem(
                 url,
                 JSON.stringify({ data, timestamp: currentTime } as CacheItem)
             );
-        } catch (error) { // in case we storage quota exceeded. Will need to use memoization instead
+        } catch (error) {
             console.warn("Storage error ", error)
             return data;
         }
@@ -72,7 +71,7 @@ const fetchData = async (url: string): Promise<PokemonList | PokemonDetails | nu
         return data;
     } catch (error) {
         console.error("Error fetching data: ", error);
-        return null;
+        throw new Error("Error fetching data");
     }
 };
 

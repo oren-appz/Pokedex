@@ -23,7 +23,7 @@ describe("ErrorBoundary", () => {
             </ErrorBoundary>
         );
 
-        expect(getByText("Something went wrong.")).toBeTruthy();
+        expect(getByText("Oops! Something went wrong.")).toBeTruthy();
         expect(console.error).toHaveBeenCalled();
 
     });

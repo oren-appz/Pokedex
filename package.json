@@ -26,9 +26,10 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint 'src/**/*.{ts,tsx}'"
+    "lint": "eslint 'src/**/*.{ts,tsx}'",
+    "test": "react-scripts test",
+    "test:coverage": "CI=true npm test -- --env=jsdom --coverage"
   },
   "eslintConfig": {
     "extends": [

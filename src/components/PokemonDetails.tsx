@@ -1,8 +1,17 @@
-import React, { } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { Box, Card, CardMedia, CircularProgress, Divider, List, ListItem, ListItemText, Paper, Stack, ThemeProvider, Typography, createTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { PokemonDetails as PokemonDetailsType } from '../utilities/FetchDataWithCache';
+import { styled } from '@mui/system';
+import { useAppDispatch } from '../redux/hooks';
+import { fetchPokemonDetails } from '../redux/pokemonDetailsSlice';
+import { fetchPokemonEvolutions } from '../redux/pokemonEvolutionsSlice';
+import { fetchPokemonSpecies } from '../redux/pokemonSpeciesSlice';
+
+const TextItem = styled('div')({
+    width: '5rem'
+});
 
 
 const convertHectogramsToPounds = (hectograms: number): string => {
@@ -26,14 +35,27 @@ const PokemonDetails: React.FC = () => {
             mode: 'light',
         },
     });
-    const status = useSelector((state: { pokemonDetails: { status: string } }) => state.pokemonDetails.status)
-    const pokemonDetails: PokemonDetailsType = useSelector((state: RootState) => state.pokemonDetails.pokemonDetails);
+    const status = useSelector((state: { pokemonDetails: { status: string } }) => state.pokemonDetails?.status)
+    const pokemonEvolutions = useSelector((state: RootState) => state.pokemonEvolution)
+    const pokemonSpecies = useSelector((state: RootState) => state.pokemonSpecies?.species)
+    const pokemonDetails: PokemonDetailsType = useSelector((state: RootState) => state.pokemonDetails?.pokemonDetails);
+    const pokemons = useSelector((state: RootState) => state.pokemons?.pokemons);
+    const dispatch = useAppDispatch();
 
-    const textRow = (key: string, value: string) => (<Stack direction="row" spacing={4} ><div style={{ width: '5rem' }}>{key}</div>:<div>{value}</div></Stack>)
+    useEffect(() => {
+        if (pokemonDetails?.species?.url) {
+            dispatch(fetchPokemonSpecies(pokemonDetails));
+        }
+        if (pokemonDetails?.name) {
+            dispatch(fetchPokemonEvolutions(pokemonDetails?.name));
+        }
+    }, [pokemonDetails]);
+
+    const textRow = (key: string, value: string) => (<Stack direction="row" spacing={4} ><TextItem>{key}</TextItem>:<div>{value}</div></Stack>)
     const list = (key: string, values: string[]) => (
         <Stack direction="column" spacing={2} >
             <Typography variant="h6">{key}</Typography>
-            <List dense style={{ height: '20rem', overflow: 'auto' }}>
+            <List dense sx={{ height: '20rem', overflow: 'auto' }}>
                 {values.map(move =>
                     <ListItem key={move}>
                         <ListItemText
@@ -44,33 +66,80 @@ const PokemonDetails: React.FC = () => {
             </List>
         </Stack >)
 
+    const selectNewPokemon = (name: string) => {
+        const pokemon = pokemons.find((pokemon) => pokemon.name === name)
+        if (pokemon) {
+            dispatch(fetchPokemonDetails(pokemon.url));
+        } else {
+            console.error("Could not show evolution")
+        }
+    }
+
+    const imageLink = (direction: string, name: string, id: string) => (
+        <Fragment>
+            <Stack direction="column" spacing={2}>
+                <Typography >{direction}{name}</Typography>
+                {id !== "" ?
+                    <img width="50" onClick={() => selectNewPokemon(name)}
+                        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`}
+                        alt={name} />
+                    : ""
+                }
+            </Stack>
+        </Fragment>
+    )
+
+    const extractNumberFromUrl = (url: string | undefined | null) => {
+        if (!url) return ""
+        const segments = url.split('/');
+        const numberSegment = segments.filter(segment => segment).pop();
+        return numberSegment;
+    }
+    const evolutionsSection = () => {
+        if (pokemonEvolutions?.status == "succeeded") {
+            const from = pokemonEvolutions?.evolution.evolvesFrom;
+            const to = pokemonEvolutions?.evolution.evolvesTo[0];
+            return (
+                <Fragment>
+                    <Typography variant="h5"> -- Evolution --</Typography>
+                    <Stack direction="row" spacing={3}>
+                        {from?.name && from?.url ? imageLink("From :", from?.name || "", extractNumberFromUrl(from?.url) || "") : null}
+                        {to?.name && to?.url ? imageLink("To :", to?.name || "", extractNumberFromUrl(to?.url) || "") : null}
+                    </Stack>
+                </Fragment>
+            )
+        }
+    }
+
+
     const textDetails = () => (<Stack direction="column" spacing={1} >
         {textRow("Name", pokemonDetails?.name || "")}
         {textRow("Weight", convertHectogramsToPounds(Number(pokemonDetails?.weight)) || "")}
         {textRow("Height", convertDecimetersToFeetInches(Number(pokemonDetails?.height)) || "")}
-        {textRow("Abiliites", pokemonDetails?.abilities?.filter((ability: { is_hidden: any; }) => !ability.is_hidden).map((ability: { ability: { name: any; }; }) => ability.ability.name).join(", ") || "")}
-
+        {textRow("Abiliites", pokemonDetails?.abilities?.filter((ability: { is_hidden: boolean; }) => !ability.is_hidden).map((ability: { ability: { name: string; }; }) => ability.ability.name).join(", ") || "")}
+        {textRow("Species", pokemonSpecies?.name || "")}
+        {textRow("Genera", pokemonSpecies?.genera || "")}
+        {evolutionsSection()}
     </Stack>)
     const details = () => (<Stack direction="row" spacing={4} >
         <Card sx={{ maxWidth: 250, width: 250 }}>
-            <Box position="relative" style={{ height: "100%" }}>
-                {status === "loading" ? < CircularProgress style={{
+            <Box position="relative" sx={{ height: "100%" }}>
+                {status === "loading" ? < CircularProgress sx={{
                     position: 'absolute',
                     top: '45%',
                     left: '45%',
                     transform: 'translate(-50%, -50%)',
                 }} /> : null}
                 <CardMedia
-                    sx={{ height: 250 }}
                     component="img"
                     image={pokemonDetails?.sprites?.other["official-artwork"]["front_default"]}
                     alt='loading...'
-                    style={{ display: status === "loading" ? "none" : "block" }}
+                    sx={{ height: 250, display: status === "loading" ? "none" : "block" }}
                 /></Box>
-        </Card>{textDetails()}<Divider orientation="vertical" flexItem /> {list("Moves", pokemonDetails?.moves?.map((move: { move: { name: any; }; }) => move.move.name) || [])}</Stack>)
+        </Card>{textDetails()}<Divider orientation="vertical" flexItem /> {list("Moves", pokemonDetails?.moves?.map((move: { move: { name: string; }; }) => move.move.name) || [])}</Stack>)
     return (
         <ThemeProvider theme={theme}>
-            <Paper elevation={24} style={{ padding: '5rem', maxWidth: '100vw', width: "100%", height: "100%" }}>
+            <Paper elevation={24} sx={{ padding: '5rem', maxWidth: '100vw', width: "100%", height: "100%" }}>
                 {pokemonDetails?.sprites?.front_default ? details() : <Typography variant="h6"> Choose a pokemon on the left to see its details</Typography>}
             </Paper>
         </ThemeProvider>

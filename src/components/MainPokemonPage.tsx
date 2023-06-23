@@ -5,19 +5,23 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { CircularProgress, Divider, Snackbar, Stack, Typography } from '@mui/material';
 import { Alert } from '@mui/material';
 import PokemonDetails from './PokemonDetails';
+import { styled } from '@mui/system';
+
+const MainPokemonSection = styled('div')({
+  margin: '2rem'
+});
 
 const MainPokemonPage = () => {
   const dispatch = useAppDispatch();
   const status = useAppSelector((state: { pokemons: { status: unknown; }; }) => state.pokemons.status);
   const error = useAppSelector((state) => state.pokemons.error);
+  let content;
 
   useEffect(() => {
     if (status === 'idle') {
       dispatch(fetchPokemons());
     }
   }, [status]);
-
-  let content;
 
   if (status === 'loading') {
     content = <CircularProgress />;
@@ -28,7 +32,7 @@ const MainPokemonPage = () => {
   }
 
   return (
-    <div style={{ margin: '2rem' }}>
+    <MainPokemonSection>
       <Stack spacing={4} >
         <Stack direction="column"
           justifyContent="center"
@@ -38,9 +42,9 @@ const MainPokemonPage = () => {
         {content}
       </Stack>
       <Snackbar open={status === 'failed'} autoHideDuration={6000}>
-        <Alert severity="error">{error}</Alert>
+        <Alert severity="error">{error || 'Unknown error occured'}</Alert>
       </Snackbar>
-    </div>
+    </MainPokemonSection>
   );
 };
 

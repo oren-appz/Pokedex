@@ -8,6 +8,13 @@ import { createTheme, Paper } from '@mui/material';
 import { useAppDispatch } from '../redux/hooks';
 import { Pokemon } from '../utilities/FetchDataWithCache';
 import { fetchPokemonDetails } from '../redux/pokemonDetailsSlice';
+import { styled } from '@mui/system';
+
+const PokemonsTableSection = styled('div')({
+  height: '80vh',
+  "minWidth": '35%',
+  margin: "0 5rem"
+});
 
 const PokemonsTable = () => {
   const theme = createTheme({
@@ -54,17 +61,17 @@ const PokemonsTable = () => {
   }, []);
 
   return (
-    <div style={{ height: '80vh', "minWidth": '35%', margin: "0 5rem" }}>
+    <PokemonsTableSection >
       <Box sx={{ height: '90%', width: '100%' }}>
         <ThemeProvider theme={theme}>
-          <Paper elevation={8} style={{ width: "100%", height: "100%" }}>
+          <Paper elevation={8} sx={{ width: "100%", height: "100%" }}>
             <DataGrid rows={rows} columns={columns} onRowClick={handleRowClick} slots={{
               toolbar: GridToolbar,
             }} />
           </Paper>
         </ThemeProvider>
       </Box>
-    </div>
+    </PokemonsTableSection>
   );
 };
 

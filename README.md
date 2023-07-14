@@ -18,7 +18,7 @@ Use the Pokemon API to make API requests for data https://pokeapi.co/docs/v2.
 - Any other comments or thoughts about the project are also welcome.
 
 ## How to Run
-
+test
 ### Clone the repository
 
 ```bash
